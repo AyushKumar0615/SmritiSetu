@@ -41,8 +41,8 @@
     radial-gradient(ellipse 50rem 40rem at 100% 10%, rgba(79, 174, 142, 0.035), transparent 60%),
     radial-gradient(ellipse 70rem 60rem at 50% 100%, rgba(0, 0, 0, 0.4), transparent 70%);
 
-  /* Fixed tone for text overlaid on the always-dark photo scrims in Story
-     Mode / Memory Journal captions — must stay legible regardless of theme. */
+  /* Fixed tone for text overlaid on the always-dark photo scrims in Memory
+     Journal captions — must stay legible regardless of theme. */
   --on-photo: #f4efe7;
   --on-photo-soft: #b7ac9e;
   --on-photo-faint: #7c7267;

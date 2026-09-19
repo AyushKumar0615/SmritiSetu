@@ -13,14 +13,14 @@ SmritiSetu NER is a culturally aware AI cognitive companion for elderly dementia
 
 ## 3. User Journeys
 
-- Elderly daily journey: open app, hear greeting, complete one game, ask "Who is Ananya?", follow medicine reminder, view story mode.
+- Elderly daily journey: open app, hear greeting, complete one game, ask "Who is Ananya?", follow medicine reminder.
 - Caregiver journey: check completion, review baseline drift, read AI rationale, adjust reminder wording, call user if needed.
 - Admin journey: review NER content catalog, approve translations, audit access, monitor impact metrics.
-- SIH judge journey: launch demo bar, step through elderly UI, game adaptation, memory assistant, caregiver dashboard and story mode.
+- SIH judge journey: launch demo bar, step through elderly UI, game adaptation, memory assistant and caregiver dashboard.
 
 ## 4. Feature Hierarchy
 
-- Elderly mode: dashboard, games, journal, reminders, story, caregiver call, voice prompts.
+- Elderly mode: dashboard, games, journal, reminders, caregiver call, voice prompts.
 - Cognitive games: memory pairs, relation recall, attention target selection, date/festival orientation; future language, logic and visual-spatial tasks.
 - AI layer: adaptive difficulty, personal baseline, explainable caregiver alerts, safe memory Q&A.
 - Caregiver mode: activity status, routine manager, cognitive analytics, explainable insights.
@@ -110,7 +110,7 @@ Lead with the human story, then show engineering depth. The strongest SIH pitch 
 
 ## 13. Demo Storyline
 
-Kamala Devi, 72, lives in Assam and sometimes forgets family context and routine steps. SmritiSetu greets her in a familiar tone, guides her to a short Bihu-themed memory task, answers an approved family-memory question about Ananya, reminds her about the next routine item, and gives Priya a clear, non-alarmist report. The final "wow" moment is AI Family Story Mode: approved family memories become a narrated, calming story experience.
+Kamala Devi, 72, lives in Assam and sometimes forgets family context and routine steps. SmritiSetu greets her in a familiar tone, guides her to a short Bihu-themed memory task, answers an approved family-memory question about Ananya, reminds her about the next routine item, and gives Priya a clear, non-alarmist report.
 
 ## Current Implementation Scope
 

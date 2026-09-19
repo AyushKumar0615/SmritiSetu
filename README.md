@@ -7,7 +7,7 @@ This repository contains a polished SIH-ready React prototype with:
 - Elderly-friendly dashboard with large controls, high contrast and text scaling.
 - Adaptive cognitive game shell for memory, attention and orientation tasks.
 - Voice-style memory assistant grounded in caregiver-approved family data.
-- Family memory journal, story mode and routine/reminder flows.
+- Family memory journal and routine/reminder flows.
 - Caregiver dashboard with baseline analytics and explainable insights.
 - Admin portal with regional content catalog, impact dashboard and audit logs.
 

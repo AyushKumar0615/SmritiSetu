@@ -11,7 +11,6 @@ import { useScrollReveal } from '../../hooks/useScrollReveal';
 import GameShell from './GameShell';
 import MemoryJournalView from './MemoryJournalView';
 import RemindersView from './RemindersView';
-import StoryModeView from './StoryModeView';
 import CaregiverConnectionsView from './CaregiverConnectionsView';
 import VoiceAssistantModal from './VoiceAssistantModal';
 import VoiceOrb from './VoiceOrb';
@@ -125,8 +124,6 @@ export default function ElderlyHome({ currentLang, currentState, session, locati
     content = <MemoryJournalView session={session} onBack={() => setActiveSubView('home')} onOpenVoiceAssistant={() => setIsAssistantOpen(true)} />;
   } else if (activeSubView === 'reminders') {
     content = <RemindersView session={session} onBack={() => setActiveSubView('home')} />;
-  } else if (activeSubView === 'story') {
-    content = <StoryModeView onBack={() => setActiveSubView('home')} />;
   } else if (activeSubView === 'caregivers') {
     content = <CaregiverConnectionsView session={session} onBack={() => setActiveSubView('home')} />;
   } else {
@@ -288,18 +285,8 @@ export default function ElderlyHome({ currentLang, currentState, session, locati
             <ArrowUpRight className="index-arrow w-5 h-5" />
           </button>
 
-          <button type="button" onClick={() => setActiveSubView('story')} className="index-row">
-            <span className="index-num">03</span>
-            <span className="index-icon">📖</span>
-            <span className="flex-1 min-w-0">
-              <span className="font-display text-xl md:text-2xl font-medium block">{t('aiStoryMode')}</span>
-              <span className="index-desc text-sm block mt-0.5 text-ink-faint">{t('storyModeDesc')}</span>
-            </span>
-            <ArrowUpRight className="index-arrow w-5 h-5" />
-          </button>
-
           <button type="button" onClick={() => setActiveSubView('caregivers')} className="index-row">
-            <span className="index-num">04</span>
+            <span className="index-num">03</span>
             <span className="index-icon">🤝</span>
             <span className="flex-1 min-w-0">
               <span className="font-display text-xl md:text-2xl font-medium block">{t('navMyCaregivers')}</span>
@@ -316,7 +303,7 @@ export default function ElderlyHome({ currentLang, currentState, session, locati
             }}
             className="index-row"
           >
-            <span className="index-num">05</span>
+            <span className="index-num">04</span>
             <span className="index-icon" style={{ background: 'var(--alert-soft)', color: 'var(--alert)' }}><PhoneCall className="w-4.5 h-4.5" /></span>
             <span className="flex-1 min-w-0">
               <span className="font-display text-xl md:text-2xl font-medium block text-alert">{t('callCaregiver')}</span>

@@ -64,7 +64,7 @@ export default {
           strong: 'var(--hairline-strong)'
         },
         // Fixed tone for captions sitting on the always-dark photo scrims in
-        // Story Mode / Memory Journal — deliberately theme-independent.
+        // Memory Journal — deliberately theme-independent.
         'on-photo': {
           DEFAULT: 'var(--on-photo)',
           soft: 'var(--on-photo-soft)',

@@ -97,23 +97,20 @@ export const UI_COPY = {
     subGreeting: 'Your calm care plan is ready for today.',
     playGames: 'Play Memory Games',
     memories: 'My Family Memories',
-    reminders: 'My Reminders',
-    story: 'Family Story Mode'
+    reminders: 'My Reminders'
   },
   hi: {
     greeting: 'Suprabhat, Kamala Devi',
     subGreeting: 'Aaj ka dekhbhal yojana taiyar hai.',
     playGames: 'Memory Games kheliye',
     memories: 'Meri Parivar Yaadein',
-    reminders: 'Mere Reminders',
-    story: 'Parivar Story Mode'
+    reminders: 'Mere Reminders'
   },
   as: {
     greeting: 'Nomoskar, Kamala Devi',
     subGreeting: 'Aji apunar shanto care plan ready ase.',
     playGames: 'Memory Games',
     memories: 'Family Memories',
-    reminders: 'Reminders',
-    story: 'Story Mode'
+    reminders: 'Reminders'
   }
 };

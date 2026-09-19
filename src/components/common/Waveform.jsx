@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 const BARS = [0, 1, 2, 3, 4];
 
 // The one shared "audio is playing" signature used anywhere voice
-// narration happens — the orb, the memory-journal CTA, story mode.
+// narration happens — the orb, the memory-journal CTA.
 export default function Waveform({ active = true, color = '#1a0f08', barWidth = 3, height = 24 }) {
   return (
     <div className="flex items-center justify-center gap-[3px]" style={{ height }}>
