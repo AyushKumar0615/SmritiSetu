@@ -38,20 +38,28 @@ export const INDIAN_STATES_AND_UTS = [
   'West Bengal'
 ];
 
-// Major Indian regional/official languages (constitutionally recognized)
+// Major Indian regional/official languages (constitutionally recognized),
+// plus widely spoken Northeast Indian languages (Khasi, Garo, Mizo,
+// Kokborok, Ao) that don't yet have dedicated dictionary entries — they
+// fall back to English via LocalizationService.getText's existing fallback.
 export const INDIAN_LANGUAGES = [
+  { code: 'njo', name: 'Ao' },
   { code: 'as', name: 'Assamese' },
   { code: 'bn', name: 'Bengali' },
   { code: 'brx', name: 'Bodo' },
   { code: 'en', name: 'English' },
+  { code: 'grt', name: 'Garo' },
   { code: 'gu', name: 'Gujarati' },
   { code: 'hi', name: 'Hindi' },
   { code: 'kn', name: 'Kannada' },
   { code: 'ks', name: 'Kashmiri' },
+  { code: 'kha', name: 'Khasi' },
+  { code: 'trp', name: 'Kokborok' },
   { code: 'kok', name: 'Konkani' },
   { code: 'ml', name: 'Malayalam' },
   { code: 'mni', name: 'Manipuri (Meitei)' },
   { code: 'mr', name: 'Marathi' },
+  { code: 'lus', name: 'Mizo' },
   { code: 'ne', name: 'Nepali' },
   { code: 'or', name: 'Odia' },
   { code: 'pa', name: 'Punjabi' },
