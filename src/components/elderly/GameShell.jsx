@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useBackButton } from '../../hooks/useBackButton';
+import { BACK_PRIORITY } from '../../services/backButtonService';
 import MemoryTrailGame from '../games/MemoryTrailGame';
 import CulturalGridGame from '../games/CulturalGridGame';
 import MemoryMarketGame from '../games/MemoryMarketGame';
@@ -83,6 +85,8 @@ export default function GameShell({ session, onBack }) {
   const startGame = () => setView('countdown');
   const beginPlaying = () => { setGameStartedAt(Date.now()); setView('playing'); };
   const exitToLibrary = () => { setActiveGameId(null); setResult(null); setGameStartedAt(null); setSaveError(''); setView('library'); };
+
+  useBackButton(() => { exitToLibrary(); return true; }, { enabled: view !== 'library', priority: BACK_PRIORITY.SCREEN_STEP });
 
   const handleFinishGame = async (sessionData) => {
     setResult(sessionData);

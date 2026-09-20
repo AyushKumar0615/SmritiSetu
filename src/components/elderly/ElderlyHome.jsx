@@ -8,6 +8,8 @@ import { AudioService } from '../../services/audioService';
 import { ReminderService, formatTime12h } from '../../services/reminderService';
 import { REMINDER_COMPLETED_EVENT } from '../../services/reminderAlertEngine';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
+import { useBackButton } from '../../hooks/useBackButton';
+import { BACK_PRIORITY } from '../../services/backButtonService';
 import GameShell from './GameShell';
 import MemoryJournalView from './MemoryJournalView';
 import RemindersView from './RemindersView';
@@ -28,6 +30,10 @@ export default function ElderlyHome({ currentLang, currentState, session, locati
   const [reminders, setReminders] = useState([]);
   const [isLoadingReminders, setIsLoadingReminders] = useState(true);
   const containerRef = useScrollReveal();
+
+  useBackButton(() => { setIsAssistantOpen(false); return true; }, { enabled: isAssistantOpen, priority: BACK_PRIORITY.OVERLAY });
+  useBackButton(() => { setActiveSubView('home'); return true; }, { enabled: activeSubView !== 'home', priority: BACK_PRIORITY.SUBVIEW });
+
   const spotlightRef = useRef(null);
   const heroRef = useRef(null);
 
