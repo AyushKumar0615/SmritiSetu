@@ -2,6 +2,7 @@
   "appId": "com.smritisetu.app",
   "appName": "SmritiSetu",
   "webDir": "dist",
+  "loggingBehavior": "none",
   "plugins": {
     "SystemBars": {
       "insetsHandling": "native",
