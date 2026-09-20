@@ -13,6 +13,11 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+        <!-- Dark system bars to match the app. windowBackground is what Capacitor's SystemBars paints behind the bars (must be a color). -->
+        <item name="android:windowBackground">@color/smritisetu_canvas</item>
+        <item name="android:statusBarColor">@color/smritisetu_canvas</item>
+        <item name="android:navigationBarColor">@color/smritisetu_canvas</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
 

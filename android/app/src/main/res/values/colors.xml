@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Matches the web app's dark canvas color from src/styles.css. Shown behind the status and navigation bars. -->
+    <color name="smritisetu_canvas">#131110</color>
+</resources>

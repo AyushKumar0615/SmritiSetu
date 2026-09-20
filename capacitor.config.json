@@ -1,5 +1,11 @@
 {
   "appId": "com.smritisetu.ner",
   "appName": "SmritiSetu",
-  "webDir": "dist"
+  "webDir": "dist",
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "native",
+      "style": "DARK"
+    }
+  }
 }
