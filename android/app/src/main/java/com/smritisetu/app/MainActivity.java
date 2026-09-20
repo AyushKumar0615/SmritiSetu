@@ -1,4 +1,4 @@
-package com.smritisetu.ner;
+package com.smritisetu.app;
 
 import com.getcapacitor.BridgeActivity;
 
