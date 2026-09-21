@@ -138,6 +138,7 @@ Deno.serve(async (req: Request) => {
   const { data: subscriptions, error: subscriptionsError } = await supabase
     .from('push_subscriptions')
     .select('id, user_id, endpoint, p256dh, auth')
+    .eq('platform', 'web') // Android (FCM) rows have no Web Push endpoint — they're sent by send-fcm-notification
     .in('user_id', [...recipientIds]);
 
   if (subscriptionsError) {
