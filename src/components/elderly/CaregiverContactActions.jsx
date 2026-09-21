@@ -9,6 +9,38 @@ import { ContactActionsService } from '../../services/contactActionsService';
 import { normalizePhone, formatPhoneDisplay } from '../../services/phoneNumber';
 import ConfirmDialog from '../common/ConfirmDialog';
 
+// The one "Call <name>?" confirmation + call, shared by the caregiver list below
+// and the dashboard's Call Caregiver tile. Confirming closes the dialog, then
+// places the call (directly on Android). onStart / onResult let the caller show
+// progress or a failure; onResult gets { ok, method?, error? }.
+// Portalled to <body>: a caller inside an animated (transformed) card would
+// otherwise trap the fixed overlay inside it.
+export function CaregiverCallDialog({ isOpen, name, phone, onClose, onStart, onResult }) {
+  const { t } = useTranslation();
+
+  useBackButton(() => { onClose(); return true; }, { enabled: isOpen, priority: BACK_PRIORITY.OVERLAY });
+
+  const handleConfirm = async () => {
+    onClose();
+    onStart?.();
+    const result = await ContactActionsService.call(phone);
+    onResult?.(result);
+  };
+
+  return createPortal(
+    <ConfirmDialog
+      isOpen={isOpen}
+      title={t('callConfirmTitle').replace('{name}', name || '')}
+      message={t('callConfirmMessage').replace('{number}', formatPhoneDisplay(phone || ''))}
+      confirmLabel={t('callConfirmLabel')}
+      isDanger={false}
+      onConfirm={handleConfirm}
+      onCancel={onClose}
+    />,
+    document.body
+  );
+}
+
 // Shows a connected caregiver's stored phone number with 📞 Call and 💬 Message.
 // Call asks first ("Call Priya?"), then dials straight away on Android (the
 // dialer elsewhere); Message opens the SMS app addressed to the number. A
@@ -20,8 +52,6 @@ export default function CaregiverContactActions({ caregiverId, caregiverName }) 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState('');
-
-  useBackButton(() => { setConfirmOpen(false); return true; }, { enabled: confirmOpen, priority: BACK_PRIORITY.OVERLAY });
 
   useEffect(() => {
     let cancelled = false;
@@ -42,15 +72,6 @@ export default function CaregiverContactActions({ caregiverId, caregiverName }) 
 
   const name = caregiverName || '';
   const phone = normalizePhone(storedPhone || '');
-
-  const handleCall = async () => {
-    setConfirmOpen(false);
-    setIsBusy(true);
-    setError('');
-    const result = await ContactActionsService.call(phone);
-    setIsBusy(false);
-    if (!result.ok) setError(t('callFailedError'));
-  };
 
   const handleMessage = async () => {
     setError('');
@@ -80,19 +101,14 @@ export default function CaregiverContactActions({ caregiverId, caregiverName }) 
 
       {error && <p role="alert" className="text-sm mt-2.5 text-alert">{error}</p>}
 
-      {/* Portalled to <body>: the card is animated (transformed), which would otherwise trap the fixed overlay inside it. */}
-      {createPortal(
-        <ConfirmDialog
-          isOpen={confirmOpen}
-          title={t('callConfirmTitle').replace('{name}', name)}
-          message={t('callConfirmMessage').replace('{number}', formatPhoneDisplay(phone))}
-          confirmLabel={t('callConfirmLabel')}
-          isDanger={false}
-          onConfirm={handleCall}
-          onCancel={() => setConfirmOpen(false)}
-        />,
-        document.body
-      )}
+      <CaregiverCallDialog
+        isOpen={confirmOpen}
+        name={name}
+        phone={phone}
+        onClose={() => setConfirmOpen(false)}
+        onStart={() => { setIsBusy(true); setError(''); }}
+        onResult={(result) => { setIsBusy(false); if (!result.ok) setError(t('callFailedError')); }}
+      />
     </div>
   );
 }
