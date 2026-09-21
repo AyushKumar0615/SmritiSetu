@@ -14,12 +14,16 @@ import GameShell from './GameShell';
 import MemoryJournalView from './MemoryJournalView';
 import RemindersView from './RemindersView';
 import CaregiverConnectionsView from './CaregiverConnectionsView';
+import { CaregiverCallDialog } from './CaregiverContactActions';
+import { PhoneProfileService } from '../../services/phoneProfileService';
+import InlineNotice from '../common/InlineNotice';
 import VoiceAssistantModal from './VoiceAssistantModal';
 import VoiceOrb from './VoiceOrb';
 import Magnetic from '../common/Magnetic';
 import { Volume2, ArrowUpRight, PhoneCall, Home, Brain, BookOpen, Bell, Users, MapPin, ShieldAlert } from 'lucide-react';
 
 const RING_CIRCUMFERENCE = 2 * Math.PI * 20;
+const CALL_LOOKUP_MESSAGE_KEY = { no_caregiver: 'callNoCaregiverMessage', no_phone: 'callNoPhoneMessage', error: 'callLookupError' };
 
 export default function ElderlyHome({ currentLang, currentState, session, locationTracking }) {
   const { t } = useTranslation();
@@ -30,6 +34,27 @@ export default function ElderlyHome({ currentLang, currentState, session, locati
   const [reminders, setReminders] = useState([]);
   const [isLoadingReminders, setIsLoadingReminders] = useState(true);
   const containerRef = useScrollReveal();
+
+  // "Call Caregiver" tile: find the primary caregiver's number, then hand over to
+  // the same confirm-and-call dialog the caregiver list uses.
+  const [callTarget, setCallTarget] = useState(null); // { name, phone }
+  const [isCallOpen, setIsCallOpen] = useState(false);
+  const [isFindingCaregiver, setIsFindingCaregiver] = useState(false);
+  const [callNotice, setCallNotice] = useState(null); // { tone, message }
+
+  const handleCallCaregiver = async () => {
+    if (isFindingCaregiver) return;
+    setCallNotice(null);
+    setIsFindingCaregiver(true);
+    const result = await PhoneProfileService.getPrimaryCaregiverContact(session?.id);
+    setIsFindingCaregiver(false);
+    if (result.status === 'found') {
+      setCallTarget({ name: result.caregiver.name, phone: result.caregiver.phone });
+      setIsCallOpen(true);
+      return;
+    }
+    setCallNotice({ tone: result.status === 'error' ? 'error' : 'info', message: t(CALL_LOOKUP_MESSAGE_KEY[result.status] || 'callLookupError') });
+  };
 
   useBackButton(() => { setIsAssistantOpen(false); return true; }, { enabled: isAssistantOpen, priority: BACK_PRIORITY.OVERLAY });
   useBackButton(() => { setActiveSubView('home'); return true; }, { enabled: activeSubView !== 'home', priority: BACK_PRIORITY.SUBVIEW });
@@ -301,14 +326,7 @@ export default function ElderlyHome({ currentLang, currentState, session, locati
             <ArrowUpRight className="index-arrow w-5 h-5" />
           </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              AudioService.speak('Connecting emergency call to your caregiver.', 'en');
-              alert('Call Initiated to Primary Caregiver.');
-            }}
-            className="index-row"
-          >
+          <button type="button" onClick={handleCallCaregiver} disabled={isFindingCaregiver} className="index-row">
             <span className="index-num">04</span>
             <span className="index-icon" style={{ background: 'var(--alert-soft)', color: 'var(--alert)' }}><PhoneCall className="w-4.5 h-4.5" /></span>
             <span className="flex-1 min-w-0">
@@ -318,6 +336,17 @@ export default function ElderlyHome({ currentLang, currentState, session, locati
             <ArrowUpRight className="index-arrow w-5 h-5" />
           </button>
         </div>
+
+        <div className={callNotice ? 'mt-4' : ''}>
+          <InlineNotice tone={callNotice?.tone} message={callNotice?.message} onDismiss={() => setCallNotice(null)} autoDismissMs={9000} />
+        </div>
+        <CaregiverCallDialog
+          isOpen={isCallOpen}
+          name={callTarget?.name}
+          phone={callTarget?.phone}
+          onClose={() => setIsCallOpen(false)}
+          onResult={(result) => { if (!result.ok) setCallNotice({ tone: 'error', message: t('callFailedError') }); }}
+        />
       </section>
 
       <nav className="rail-pad content-col pb-20 grid grid-cols-2 sm:flex sm:items-center gap-x-8 gap-y-4 scroll-reveal" aria-label={t('elderShortcutsAria')} style={{ borderTop: '1px solid var(--hairline)', paddingTop: '2rem' }}>

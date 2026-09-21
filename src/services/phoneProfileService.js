@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient';
 import { normalizePhone } from './phoneNumber';
+import { CaregiverConnectionService } from './caregiverConnectionService';
 
 // Reads/writes the phone number on the existing `profiles` row (profiles.phone,
 // see supabase/migrations/20260922000000_profiles_phone.sql) — no separate
@@ -38,5 +39,28 @@ export const PhoneProfileService = {
     const { data, error } = await supabase.from('profiles').select('id, phone').in('id', unique);
     if (error) return {};
     return Object.fromEntries((data || []).filter((row) => row.phone).map((row) => [row.id, row.phone]));
+  },
+
+  // Who the elder's "Call Caregiver" tile should ring: the caregiver connected
+  // the longest (accepted connections only) who has a valid number. There is no
+  // "primary" flag in the data, so oldest-first is the rule.
+  // -> { status: 'found', caregiver: { id, name, phone } }   phone is E.164
+  //  | { status: 'no_caregiver' } | { status: 'no_phone' } | { status: 'error' }
+  async getPrimaryCaregiverContact(elderId) {
+    if (!elderId) return { status: 'no_caregiver' };
+    const result = await CaregiverConnectionService.listCaregiversForElder(elderId);
+    if (!result.ok) return { status: 'error' };
+
+    const accepted = result.connections
+      .filter((c) => c.status === 'accepted' && c.caregiver?.id)
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    if (accepted.length === 0) return { status: 'no_caregiver' };
+
+    const phones = await this.getPhonesForProfiles(accepted.map((c) => c.caregiver.id));
+    for (const c of accepted) {
+      const phone = normalizePhone(phones[c.caregiver.id] || '');
+      if (phone) return { status: 'found', caregiver: { id: c.caregiver.id, name: c.caregiver.fullName, phone } };
+    }
+    return { status: 'no_phone' };
   }
 };
