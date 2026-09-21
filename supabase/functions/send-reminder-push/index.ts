@@ -32,6 +32,7 @@ import webpush from 'npm:web-push@3';
 const IST_TIME_ZONE = 'Asia/Kolkata';
 const MISSED_REMINDER_GRACE_MS = 2 * 60 * 60 * 1000; // keep in sync with reminderAlertEngine.js
 const DAY_ABBR = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const FCM_REQUEST_TIMEOUT_MS = 10_000; // a slow send-fcm-notification call must never stall the web reminders
 
 function getIstParts(now: Date) {
   const parts = new Intl.DateTimeFormat('en-US', {
@@ -152,16 +153,58 @@ Deno.serve(async (req: Request) => {
     subscriptionsByUser.set(s.user_id, list);
   });
 
+  // Recipients that also have an Android (FCM) device. Only user ids are read —
+  // the device tokens themselves never leave send-fcm-notification. A failure
+  // here only turns Android delivery off for this run; web reminders continue.
+  const androidUserIds = new Set<string>();
+  const { data: androidSubscriptions, error: androidSubscriptionsError } = await supabase
+    .from('push_subscriptions')
+    .select('user_id')
+    .eq('platform', 'android')
+    .not('fcm_token', 'is', null)
+    .in('user_id', [...recipientIds]);
+
+  if (androidSubscriptionsError) {
+    console.warn('[send-reminder-push] android recipients query failed; skipping FCM this run');
+  } else {
+    (androidSubscriptions || []).forEach((s) => androidUserIds.add(s.user_id));
+  }
+
   let sent = 0;
   let skippedAlreadySent = 0;
   let removedInvalid = 0;
+  const fcm = { requests: 0, sent: 0, failed: 0, removedInvalid: 0, requestFailures: 0 };
+
+  // One call per claimed Android recipient. Any failure is counted and swallowed
+  // — it must never affect the web sends or the remaining reminders. Only counts
+  // are recorded: no tokens, no response bodies, no secrets.
+  const fcmUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/send-fcm-notification`;
+  const sendAndroid = async (userId: string, reminderId: string, tag: string) => {
+    fcm.requests += 1;
+    try {
+      const response = await fetch(fcmUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${cronSecret}` },
+        body: JSON.stringify({ userIds: [userId], reminderId, tag }),
+        signal: AbortSignal.timeout(FCM_REQUEST_TIMEOUT_MS)
+      });
+      const result = (await response.json().catch(() => null)) as { sent?: unknown; failed?: unknown; removedInvalid?: unknown } | null;
+      const count = (value: unknown) => (typeof value === 'number' && Number.isFinite(value) ? value : 0);
+      fcm.sent += count(result?.sent);
+      fcm.failed += count(result?.failed);
+      fcm.removedInvalid += count(result?.removedInvalid);
+      if (!response.ok) fcm.requestFailures += 1;
+    } catch {
+      fcm.requestFailures += 1; // network error or timeout
+    }
+  };
 
   for (const reminder of dueReminders) {
     const recipientsForThisReminder = new Set<string>([reminder.user_id, ...(caregiversByElder.get(reminder.user_id) || [])]);
 
     for (const recipientUserId of recipientsForThisReminder) {
       const subs = subscriptionsByUser.get(recipientUserId) || [];
-      if (subs.length === 0) continue;
+      if (subs.length === 0 && !androidUserIds.has(recipientUserId)) continue;
 
       // Idempotency: claim this (reminder, day, recipient) before sending —
       // if another concurrent/retried run already claimed it, this insert
@@ -206,11 +249,18 @@ Deno.serve(async (req: Request) => {
           // failing push service every minute.
         }
       }
+
+      // Same claim covers the Android device(s) of this recipient.
+      if (androidUserIds.has(recipientUserId)) {
+        await sendAndroid(recipientUserId, reminder.id, `smritisetu-reminder-${reminder.id}-${ist.dateString}`);
+      }
     }
   }
 
+  if (fcm.requests > 0) console.info('[send-reminder-push] android/fcm', JSON.stringify(fcm));
+
   return new Response(
-    JSON.stringify({ ok: true, due: dueReminders.length, sent, skippedAlreadySent, removedInvalid }),
+    JSON.stringify({ ok: true, due: dueReminders.length, sent, skippedAlreadySent, removedInvalid, fcm }),
     { status: 200, headers: { 'Content-Type': 'application/json' } }
   );
 });
