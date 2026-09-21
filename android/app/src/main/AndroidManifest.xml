@@ -46,4 +46,8 @@
 
     <!-- Notification runtime permission (Android 13+), requested through the push notifications plugin -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Caregiver "Call" starts the call directly (DirectCallPlugin); telephony stays optional so tablets without a SIM can still install -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
 </manifest>

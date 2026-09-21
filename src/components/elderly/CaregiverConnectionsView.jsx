@@ -7,6 +7,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import UserAvatar from '../common/UserAvatar';
 import ConfirmDialog from '../common/ConfirmDialog';
 import InlineNotice from '../common/InlineNotice';
+import CaregiverContactActions from './CaregiverContactActions';
 
 const ERROR_KEY = {
   unknown: 'connectionGenericError',
@@ -212,6 +213,7 @@ export default function CaregiverConnectionsView({ session, onBack }) {
                     <span className="text-xs block mt-0.5 text-jade">
                       {t('connectedSinceLabel')} {new Date(conn.updatedAt).toLocaleDateString()}
                     </span>
+                    <CaregiverContactActions caregiverId={conn.caregiver?.id} caregiverName={conn.caregiver?.fullName} />
                   </div>
                 </div>
                 <button type="button" onClick={() => setDisconnectTarget(conn)} className="btn btn-danger-quiet shrink-0">

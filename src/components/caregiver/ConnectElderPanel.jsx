@@ -7,6 +7,7 @@ import UserAvatar from '../common/UserAvatar';
 import ConfirmDialog from '../common/ConfirmDialog';
 import InlineNotice from '../common/InlineNotice';
 import { SkeletonList } from '../common/Skeleton';
+import MyPhoneCard from './MyPhoneCard';
 
 const ERROR_KEY = {
   invalid_code: 'connectionInvalidCodeError',
@@ -90,6 +91,8 @@ export default function ConnectElderPanel({ session, connections, isLoading, loa
           </button>
         </form>
       </motion.div>
+
+      <MyPhoneCard session={session} />
 
       <section>
         <h3 className="font-display text-xl font-medium mb-4">{t('connectedElderTitle')}</h3>
