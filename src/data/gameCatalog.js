@@ -9,8 +9,5 @@
 // unnecessary coupling. If a game is added or removed in GameShell.jsx,
 // update this list too.
 export const GAME_CATALOG = [
-  { id: 'trail', titleKey: 'gameTrailTitle' },
-  { id: 'grid', titleKey: 'gameGridTitle' },
-  { id: 'market', titleKey: 'gameMarketTitle' },
-  { id: 'changed', titleKey: 'gameChangedTitle' }
+  { id: 'piano', titleKey: 'gamePianoTitle' }
 ];

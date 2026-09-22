@@ -21,3 +21,18 @@ export function nextDifficultyLevel(currentLevel, accuracy, maxLevel = 5) {
   if (accuracy < 50 && currentLevel > 1) return currentLevel - 1;
   return currentLevel;
 }
+
+// Progressive difficulty ladder shared by every game (moved here from the
+// old culturalContent.js, which was game-specific and has been removed).
+export const DIFFICULTY_LEVELS = [
+  { level: 1, labelKey: 'difficultyLevelFamiliar' },
+  { level: 2, labelKey: 'difficultyLevelFocus' },
+  { level: 3, labelKey: 'difficultyLevelChallenge' },
+  { level: 4, labelKey: 'difficultyLevelAdvanced' },
+  { level: 5, labelKey: 'difficultyLevelExpert' }
+];
+
+// Returns a translation KEY (not display text) — callers must wrap with t().
+export function difficultyLabelKey(level) {
+  return DIFFICULTY_LEVELS.find((d) => d.level === level)?.labelKey || 'difficultyLevelFamiliar';
+}

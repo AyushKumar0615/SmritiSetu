@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useBackButton } from '../../hooks/useBackButton';
 import { BACK_PRIORITY } from '../../services/backButtonService';
-import MemoryTrailGame from '../games/MemoryTrailGame';
-import CulturalGridGame from '../games/CulturalGridGame';
-import MemoryMarketGame from '../games/MemoryMarketGame';
-import WhatChangedGame from '../games/WhatChangedGame';
+import PianoSequenceGame from '../games/PianoSequenceGame';
 import GameIntro from '../games/shared/GameIntro';
 import GameResult from '../games/shared/GameResult';
 import CategoryFilter from '../games/shared/CategoryFilter';
@@ -19,32 +16,11 @@ import confetti from 'canvas-confetti';
 
 const GAME_DEFS = [
   {
-    id: 'trail', titleKey: 'gameTrailTitle', category: 'Memory', icon: '🛤️',
-    skillKey: 'gameTrailSkill', estimatedMinutes: 5,
-    descriptionKey: 'gameTrailDesc',
-    howItWorksKeys: ['gameTrailHow1', 'gameTrailHow2', 'gameTrailHow3'],
-    Component: MemoryTrailGame
-  },
-  {
-    id: 'grid', titleKey: 'gameGridTitle', category: 'Attention', icon: '🔎',
-    skillKey: 'gameGridSkill', estimatedMinutes: 4,
-    descriptionKey: 'gameGridDesc',
-    howItWorksKeys: ['gameGridHow1', 'gameGridHow2', 'gameGridHow3'],
-    Component: CulturalGridGame
-  },
-  {
-    id: 'market', titleKey: 'gameMarketTitle', category: 'Memory', icon: '🛍️',
-    skillKey: 'gameMarketSkill', estimatedMinutes: 5,
-    descriptionKey: 'gameMarketDesc',
-    howItWorksKeys: ['gameMarketHow1', 'gameMarketHow2', 'gameMarketHow3'],
-    Component: MemoryMarketGame
-  },
-  {
-    id: 'changed', titleKey: 'gameChangedTitle', category: 'Attention', icon: '👁️',
-    skillKey: 'gameChangedSkill', estimatedMinutes: 4,
-    descriptionKey: 'gameChangedDesc',
-    howItWorksKeys: ['gameChangedHow1', 'gameChangedHow2', 'gameChangedHow3'],
-    Component: WhatChangedGame
+    id: 'piano', titleKey: 'gamePianoTitle', category: 'Memory', icon: '🎹',
+    skillKey: 'gamePianoSkill', estimatedMinutes: 4,
+    descriptionKey: 'gamePianoDesc',
+    howItWorksKeys: ['gamePianoHow1', 'gamePianoHow2', 'gamePianoHow3'],
+    Component: PianoSequenceGame
   }
 ];
 
@@ -117,6 +93,7 @@ export default function GameShell({ session, onBack }) {
         accuracy={result.accuracy}
         bestStreak={result.bestStreak}
         difficultyLevel={result.difficultyLevel}
+        extraStats={(result.extraStats || []).map((s) => ({ label: t(s.labelKey), value: s.value }))}
         onPlayAgain={() => setView('intro')}
         onBackToGames={exitToLibrary}
       />
