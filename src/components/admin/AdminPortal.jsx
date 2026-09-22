@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useBackButton } from '../../hooks/useBackButton';
+import { BACK_PRIORITY } from '../../services/backButtonService';
 import ImpactDashboard from './ImpactDashboard';
 import AdminSidebar from './AdminSidebar';
 import StatCard from './StatCard';
@@ -51,6 +53,7 @@ export default function AdminPortal({ session, onLogout, theme, onToggleTheme })
   const [roleFilter, setRoleFilter] = useState('');
   const [search, setSearch] = useState('');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  useBackButton(() => { setMobileNavOpen(false); return true; }, { enabled: mobileNavOpen, priority: BACK_PRIORITY.OVERLAY });
 
   const topRef = useRef(null);
   const userMgmtRef = useRef(null);

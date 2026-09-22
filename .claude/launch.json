@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "sih-dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeExecutable": "/bin/zsh",
+      "runtimeArgs": ["-c", "PATH=/Users/ayushkumar/.nvm/versions/node/v20.20.2/bin:$PATH npm run dev"],
       "port": 5173
     },
     {

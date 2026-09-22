@@ -353,6 +353,8 @@ export const DICTIONARY = {
     emailLabel: "Email",
     passwordLabel: "Password",
     enterWorkspace: "Enter Workspace",
+    orDividerLabel: "or",
+    continueWithGoogleLabel: "Continue with Google",
     fullNameLabel: "Full Name",
     stateLabel: "State",
     profilePictureLabel: "Profile Picture",

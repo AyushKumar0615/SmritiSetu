@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useBackButton } from '../../hooks/useBackButton';
+import { BACK_PRIORITY } from '../../services/backButtonService';
 import CognitiveAnalytics from './CognitiveAnalytics';
 import ExplainableInsightsView from './ExplainableInsightsView';
 import RoutineManager from './RoutineManager';
@@ -20,6 +22,7 @@ export default function CaregiverDashboard({ session }) {
   const { t } = useTranslation();
   const ownName = session?.fullName || t('guestLabel');
   const [activeTab, setActiveTab] = useState('insights');
+  useBackButton(() => { setActiveTab('insights'); return true; }, { enabled: activeTab !== 'insights', priority: BACK_PRIORITY.SUBVIEW });
 
   const [connections, setConnections] = useState([]);
   const [isLoadingConnections, setIsLoadingConnections] = useState(true);

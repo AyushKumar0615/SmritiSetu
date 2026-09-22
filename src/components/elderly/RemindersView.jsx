@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useBackButton } from '../../hooks/useBackButton';
+import { BACK_PRIORITY } from '../../services/backButtonService';
 import { ArrowLeft, CheckCircle2, Clock, Plus, X, Pencil, Trash2, Bell } from 'lucide-react';
 import { ReminderService, formatTime12h, REMINDER_CATEGORY_ICONS } from '../../services/reminderService';
 import { REMINDER_COMPLETED_EVENT } from '../../services/reminderAlertEngine';
@@ -78,6 +80,8 @@ export default function RemindersView({ session, onBack }) {
     setForm(initialForm);
     setFormError('');
   };
+
+  useBackButton(() => { closeForm(); return true; }, { enabled: showForm, priority: BACK_PRIORITY.OVERLAY });
 
   const openAddForm = () => {
     setEditingId(null);

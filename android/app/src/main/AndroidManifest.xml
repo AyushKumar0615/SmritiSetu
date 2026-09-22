@@ -22,6 +22,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- Google Sign-In deep-link return (Supabase Auth). Must match
+                 GOOGLE_OAUTH_NATIVE_REDIRECT in src/services/authService.js
+                 and be added to Supabase Dashboard -> Authentication -> URL
+                 Configuration -> Redirect URLs. Kept as its own filter, not
+                 merged into the MAIN/LAUNCHER one above, which some OEM
+                 launchers handle oddly when combined with a VIEW action. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="@string/custom_url_scheme" android:host="login-callback" />
+            </intent-filter>
+
         </activity>
 
         <provider

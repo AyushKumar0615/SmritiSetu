@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useMotionValue, useSpring } from 'framer-motion';
+import { useBackButton } from '../../hooks/useBackButton';
+import { BACK_PRIORITY } from '../../services/backButtonService';
 import { Volume2, ArrowLeft, Heart, Check, Plus, X, ImagePlus } from 'lucide-react';
 import { AudioService } from '../../services/audioService';
 import { MemoryService } from '../../services/memoryService';
@@ -124,6 +126,8 @@ export default function MemoryJournalView({ session, onBack, onOpenVoiceAssistan
     setForm(initialForm);
     setFormError('');
   };
+
+  useBackButton(() => { closeForm(); return true; }, { enabled: showAddForm, priority: BACK_PRIORITY.OVERLAY });
 
   const handleAddMemory = async (e) => {
     e.preventDefault();

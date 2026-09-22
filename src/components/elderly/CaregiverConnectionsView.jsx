@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useBackButton } from '../../hooks/useBackButton';
+import { BACK_PRIORITY } from '../../services/backButtonService';
 import { ArrowLeft, Copy, RefreshCw, ShieldCheck, UserCheck, UserX, Users, Check } from 'lucide-react';
 import { CaregiverConnectionService } from '../../services/caregiverConnectionService';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
@@ -31,6 +33,8 @@ export default function CaregiverConnectionsView({ session, onBack }) {
   const [isDisconnecting, setIsDisconnecting] = useState(false);
 
   const [notice, setNotice] = useState(null); // { tone, message }
+
+  useBackButton(() => { setDisconnectTarget(null); return true; }, { enabled: !!disconnectTarget, priority: BACK_PRIORITY.OVERLAY });
 
   const loadCode = useCallback(async () => {
     if (!session?.id) return;

@@ -14,6 +14,8 @@ import { useReminderAlerts } from './hooks/useReminderAlerts';
 import { ReminderSoundService } from './services/reminderSoundService';
 import { PushSubscriptionService } from './services/pushSubscriptionService';
 import ReminderAlertOverlay from './components/common/ReminderAlertOverlay';
+import { useBackButton } from './hooks/useBackButton';
+import { BACK_PRIORITY } from './services/backButtonService';
 import { getRoleHome } from './access/permissions';
 import RequireRole from './access/RequireRole';
 
@@ -65,6 +67,11 @@ export default function App() {
   // reminder still triggers no matter which page/game the user is on and
   // survives in-app navigation without resetting.
   const reminderAlerts = useReminderAlerts(session);
+
+  useBackButton(() => { setCurrentMode(getRoleHome(session?.role)); return true; }, {
+    enabled: !!session && currentMode !== getRoleHome(session.role),
+    priority: BACK_PRIORITY.MODE
+  });
 
   useEffect(() => {
     ReminderSoundService.attachGesturePrimer();

@@ -6,3 +6,6 @@ supabase/.temp/
 !.env.example
 
 .DS_Store
+
+# IDE metadata (Android Studio / JetBrains), including android/.idea
+.idea/

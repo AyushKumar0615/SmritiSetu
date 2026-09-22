@@ -7,7 +7,19 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY. Add them to .env.local.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    // PKCE (rather than the previous default, "implicit") is what makes the
+    // Android Google Sign-In deep-link return safe: exchangeCodeForSession()
+    // in authService.js verifies the returned code against a verifier held
+    // only in this device's storage, so another app registered for the same
+    // custom URL scheme can't redeem an intercepted code by itself. The web
+    // flow is unaffected — detectSessionInUrl (still on by default) already
+    // understands a PKCE "?code=" redirect exactly as it understood the old
+    // "#access_token=" one, so a browser sign-in completes the same way.
+    flowType: 'pkce'
+  }
+});
 
 // Most application requests can use the shared client above, which restores
 // its browser session automatically. For data that is strictly RLS-protected,

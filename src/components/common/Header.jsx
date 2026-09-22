@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useBackButton } from '../../hooks/useBackButton';
+import { BACK_PRIORITY } from '../../services/backButtonService';
 import {
   Feather,
   HeartPulse,
@@ -49,6 +51,11 @@ export default function Header({
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [avatarEditorOpen, setAvatarEditorOpen] = useState(false);
+  useBackButton(() => {
+    if (avatarEditorOpen) setAvatarEditorOpen(false);
+    else setIsOpen(false);
+    return true;
+  }, { enabled: isOpen, priority: BACK_PRIORITY.OVERLAY });
   // Centralized role -> allowed-modes config (src/access/permissions.js) is
   // the only place that decides who sees what — never duplicate that check
   // here, just filter the nav against it.
