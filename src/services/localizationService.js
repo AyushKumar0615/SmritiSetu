@@ -107,12 +107,13 @@ export const DICTIONARY = {
     roundLabel: 'Round',
     minLabel: 'min',
     adaptiveDifficultyText: 'Adaptive · 5 levels',
-    adaptiveDifficultyText3: 'Adaptive · 3 levels',
     secondsUnit: 's',
     goLabel: 'Go',
     notQuiteFeedback: "That was tricky — let's try an easier one.",
     pianoRetryFeedback: "Not quite — let's watch it again.",
     totalAttemptsLabel: 'Total Attempts',
+    attemptLabel: 'Attempt',
+    levelsPassedLabel: 'Levels Passed',
 
     gameCategoryMemory: 'Memory',
     gameCategoryAttention: 'Attention',
@@ -148,6 +149,11 @@ export const DICTIONARY = {
     matchFoundFeedback: 'Match found! ✓',
     noMatchFeedback: 'Not a match — try again.',
     memoryCardHiddenLabel: 'Hidden card',
+    levelCompleteTitle: 'Level Complete! 🎉',
+    levelMovingOnTitle: "Let's keep going!",
+    levelAdvancingHint: 'Moving to the next level…',
+    levelRetryTitle: 'Almost there!',
+    levelRetryHint: "Let's try this level again.",
     maxSequenceLabel: 'Longest Tune',
 
 

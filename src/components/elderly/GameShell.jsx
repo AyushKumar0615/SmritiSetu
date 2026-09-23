@@ -25,7 +25,7 @@ const GAME_DEFS = [
   },
   {
     id: 'memory_match', titleKey: 'gameMemoryMatchTitle', category: 'Memory', icon: '🎴',
-    skillKey: 'gameMemoryMatchSkill', estimatedMinutes: 5, totalLevels: 3,
+    skillKey: 'gameMemoryMatchSkill', estimatedMinutes: 6,
     descriptionKey: 'gameMemoryMatchDesc',
     howItWorksKeys: ['gameMemoryMatchHow1', 'gameMemoryMatchHow2', 'gameMemoryMatchHow3'],
     Component: MemoryMatchGame
@@ -51,7 +51,7 @@ export default function GameShell({ session, onBack }) {
     title: t(g.titleKey),
     skill: t(g.skillKey),
     description: t(g.descriptionKey),
-    difficultyText: t(g.totalLevels === 3 ? 'adaptiveDifficultyText3' : 'adaptiveDifficultyText'),
+    difficultyText: t('adaptiveDifficultyText'),
     howItWorks: g.howItWorksKeys.map((k) => t(k)),
     categoryLabel: t(CATEGORY_LABEL_KEYS[g.category])
   }));
