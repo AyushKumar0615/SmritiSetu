@@ -9,6 +9,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import UserAvatar from '../common/UserAvatar';
 import ConfirmDialog from '../common/ConfirmDialog';
 import InlineNotice from '../common/InlineNotice';
+import ErrorBoundary from '../common/ErrorBoundary';
 import CaregiverContactActions from './CaregiverContactActions';
 
 const ERROR_KEY = {
@@ -16,7 +17,15 @@ const ERROR_KEY = {
   not_elder: 'connectionNotElderError'
 };
 
-export default function CaregiverConnectionsView({ session, onBack }) {
+export default function CaregiverConnectionsView(props) {
+  return (
+    <ErrorBoundary>
+      <CaregiverConnectionsViewInner {...props} />
+    </ErrorBoundary>
+  );
+}
+
+function CaregiverConnectionsViewInner({ session, onBack }) {
   const { t } = useTranslation();
   const containerRef = useScrollReveal();
 
@@ -102,16 +111,22 @@ export default function CaregiverConnectionsView({ session, onBack }) {
   };
 
   const confirmDisconnect = async () => {
-    if (!disconnectTarget) return;
+    if (isDisconnecting || !disconnectTarget?.id) return;
+    const targetId = disconnectTarget.id;
     setIsDisconnecting(true);
-    const result = await CaregiverConnectionService.disconnect(disconnectTarget.id);
+    let result;
+    try {
+      result = await CaregiverConnectionService.disconnect(targetId);
+    } catch {
+      result = { ok: false };
+    }
     setIsDisconnecting(false);
     setDisconnectTarget(null);
     if (!result.ok) {
       setNotice({ tone: 'error', message: t('connectionGenericError') });
       return;
     }
-    setConnections((prev) => prev.filter((c) => c.id !== disconnectTarget.id));
+    setConnections((prev) => prev.filter((c) => c.id !== targetId));
     setNotice({ tone: 'info', message: t('connectionRemovedNotice') });
   };
 
@@ -234,6 +249,7 @@ export default function CaregiverConnectionsView({ session, onBack }) {
         title={t('disconnectCaregiverConfirmTitle')}
         message={t('disconnectCaregiverConfirmMessage')}
         confirmLabel={isDisconnecting ? t('disconnectingLabel') : t('disconnectLabel')}
+        confirmDisabled={isDisconnecting}
         onConfirm={confirmDisconnect}
         onCancel={() => setDisconnectTarget(null)}
       />

@@ -88,9 +88,20 @@ export const CaregiverConnectionService = {
     return { ok: true, connection: toConnection(data, 'elder') };
   },
 
+  // Removes only the connection row (elder<->caregiver link) — the `on
+  // delete cascade` on caregiver_connections.elder_id/caregiver_id only
+  // fires the other way (a deleted profile drops its connections), so this
+  // can never delete a profile. Wrapped in try/catch so a thrown network/
+  // client error surfaces as a normal { ok:false } result instead of an
+  // unhandled rejection that would leave the caller's UI stuck.
   async disconnect(connectionId) {
-    const { error } = await supabase.from('caregiver_connections').delete().eq('id', connectionId);
-    if (error) return { ok: false, error: 'unknown' };
-    return { ok: true };
+    if (!connectionId) return { ok: false, error: 'unknown' };
+    try {
+      const { error } = await supabase.from('caregiver_connections').delete().eq('id', connectionId);
+      if (error) return { ok: false, error: 'unknown' };
+      return { ok: true };
+    } catch {
+      return { ok: false, error: 'unknown' };
+    }
   }
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslation } from '../../hooks/useTranslation';
 
-export default function ConfirmDialog({ isOpen, title, message, confirmLabel, isDanger = true, onConfirm, onCancel }) {
+export default function ConfirmDialog({ isOpen, title, message, confirmLabel, isDanger = true, confirmDisabled = false, onConfirm, onCancel }) {
   const { t } = useTranslation();
   return (
     <AnimatePresence>
@@ -35,6 +35,7 @@ export default function ConfirmDialog({ isOpen, title, message, confirmLabel, is
                 <button
                   type="button"
                   onClick={onConfirm}
+                  disabled={confirmDisabled}
                   className={`btn ${isDanger ? 'btn-danger' : 'btn-on-light'}`}
                 >
                   {confirmLabel}
