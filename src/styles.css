@@ -1387,6 +1387,11 @@ a { color: inherit; }
     pointer-events: auto;
   }
 
+  /* ─── MEMORY MATCH — card grid built on the shared .cog-slot tile ── */
+  .memory-card-icon { font-size: 2.5rem; line-height: 1; }
+  @media (min-width: 640px) { .memory-card-icon { font-size: 3.1rem; } }
+  .memory-card:disabled { cursor: default; }
+
   /* ═══════════════════════════════════════════════════════════════
      ADMIN DASHBOARD — sidebar + stat cards + quick actions
      Scoped entirely to the admin page; nothing here is reused by the

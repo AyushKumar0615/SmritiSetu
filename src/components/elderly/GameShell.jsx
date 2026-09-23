@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useBackButton } from '../../hooks/useBackButton';
 import { BACK_PRIORITY } from '../../services/backButtonService';
 import PianoSequenceGame from '../games/PianoSequenceGame';
+import MemoryMatchGame from '../games/MemoryMatchGame';
 import GameIntro from '../games/shared/GameIntro';
 import GameResult from '../games/shared/GameResult';
 import CategoryFilter from '../games/shared/CategoryFilter';
@@ -21,6 +22,13 @@ const GAME_DEFS = [
     descriptionKey: 'gamePianoDesc',
     howItWorksKeys: ['gamePianoHow1', 'gamePianoHow2', 'gamePianoHow3'],
     Component: PianoSequenceGame
+  },
+  {
+    id: 'memory_match', titleKey: 'gameMemoryMatchTitle', category: 'Memory', icon: '🎴',
+    skillKey: 'gameMemoryMatchSkill', estimatedMinutes: 5, totalLevels: 3,
+    descriptionKey: 'gameMemoryMatchDesc',
+    howItWorksKeys: ['gameMemoryMatchHow1', 'gameMemoryMatchHow2', 'gameMemoryMatchHow3'],
+    Component: MemoryMatchGame
   }
 ];
 
@@ -43,7 +51,7 @@ export default function GameShell({ session, onBack }) {
     title: t(g.titleKey),
     skill: t(g.skillKey),
     description: t(g.descriptionKey),
-    difficultyText: t('adaptiveDifficultyText'),
+    difficultyText: t(g.totalLevels === 3 ? 'adaptiveDifficultyText3' : 'adaptiveDifficultyText'),
     howItWorks: g.howItWorksKeys.map((k) => t(k)),
     categoryLabel: t(CATEGORY_LABEL_KEYS[g.category])
   }));

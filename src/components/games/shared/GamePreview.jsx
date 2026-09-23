@@ -22,8 +22,22 @@ function PianoPreview() {
   );
 }
 
+function MemoryMatchPreview() {
+  return (
+    <div className="gp-grid" aria-hidden="true">
+      <span className="gp-chip is-target">🍎</span>
+      <span className="gp-chip">❓</span>
+      <span className="gp-chip">❓</span>
+      <span className="gp-chip">❓</span>
+      <span className="gp-chip is-target">🍎</span>
+      <span className="gp-chip">❓</span>
+    </div>
+  );
+}
+
 const PREVIEWS = {
-  piano: PianoPreview
+  piano: PianoPreview,
+  memory_match: MemoryMatchPreview
 };
 
 export default function GamePreview({ gameId, size = 'sm' }) {

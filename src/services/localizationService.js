@@ -107,10 +107,12 @@ export const DICTIONARY = {
     roundLabel: 'Round',
     minLabel: 'min',
     adaptiveDifficultyText: 'Adaptive · 5 levels',
+    adaptiveDifficultyText3: 'Adaptive · 3 levels',
     secondsUnit: 's',
     goLabel: 'Go',
     notQuiteFeedback: "That was tricky — let's try an easier one.",
     pianoRetryFeedback: "Not quite — let's watch it again.",
+    totalAttemptsLabel: 'Total Attempts',
 
     gameCategoryMemory: 'Memory',
     gameCategoryAttention: 'Attention',
@@ -134,6 +136,18 @@ export const DICTIONARY = {
     pianoYourTurnMainHint: 'Now repeat the sequence.',
     pianoYourTurnHint: 'Tap the piano keys in the same order.',
     pianoReplayLabel: 'Play Sequence Again',
+
+    gameMemoryMatchTitle: 'Memory Match',
+    gameMemoryMatchDesc: 'Flip two cards at a time and find every matching pair.',
+    gameMemoryMatchSkill: 'Visual memory & concentration',
+    gameMemoryMatchHow1: 'Tap a card to flip it face up.',
+    gameMemoryMatchHow2: 'Tap a second card — if they match, both stay face up.',
+    gameMemoryMatchHow3: "If they don't match, they flip back — remember where they were and try again.",
+    memoryMatchHint: 'Tap two cards to find a matching pair.',
+    pairsFoundLabel: 'Pairs Found',
+    matchFoundFeedback: 'Match found! ✓',
+    noMatchFeedback: 'Not a match — try again.',
+    memoryCardHiddenLabel: 'Hidden card',
     maxSequenceLabel: 'Longest Tune',
 
 
