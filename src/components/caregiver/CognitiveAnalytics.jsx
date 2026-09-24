@@ -32,9 +32,7 @@ export default function CognitiveAnalytics({ elderId, userName }) {
     setIsRetrying(true);
     setError('');
     const result = await CognitiveAnalyticsService.requestAnalysis(latestSession.id);
-    if (!result.ok) setError(result.error === 'ai_not_configured'
-      ? 'AI analysis is not configured on the server. An administrator must set the OPENAI_API_KEY Edge Function secret.'
-      : 'Analysis is still unavailable. The game result remains saved; please try again later.');
+    if (!result.ok) setError(CognitiveAnalyticsService.describeAnalysisError(result.error));
     await loadAnalytics();
     setIsRetrying(false);
   };
@@ -62,7 +60,14 @@ function FailureState({ message, onRetry, label }) {
 
 function AnalysisUnavailable({ latestSession, error, isRetrying, onRetry, label }) {
   const isProcessing = latestSession.analysisStatus === 'processing' || latestSession.analysisStatus === 'pending';
-  return <div className="panel-light p-8 sm:p-10 text-center space-y-5 max-w-lg mx-auto"><div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto" style={{ background: 'rgba(226,112,58,0.15)', color: 'var(--ember-deep)' }}><AlertTriangle className="w-6 h-6" /></div><div><h3 className="font-display text-xl sm:text-2xl font-medium">Analysis unavailable</h3><p className="text-sm mt-2 text-ink-soft">{error || (isProcessing ? 'This completed game is still being analysed. Refresh shortly, or retry if it remains pending.' : 'The completed game result is saved, but its analysis could not be generated.')}</p></div><button type="button" className="btn btn-on-light" onClick={onRetry} disabled={isRetrying}>{isRetrying ? 'Retrying…' : <><RefreshCw className="w-4 h-4" /> {label}</>}</button></div>;
+  // A persisted analysis_error (from a prior failed attempt) is shown even
+  // before the caregiver clicks Retry, so the reason is visible on first
+  // load rather than only after re-triggering the request.
+  const persistedReason = latestSession.analysisStatus === 'failed' && latestSession.analysisError
+    ? CognitiveAnalyticsService.describeAnalysisError(latestSession.analysisError)
+    : null;
+  const message = error || persistedReason || (isProcessing ? 'This completed game is still being analysed. Refresh shortly, or retry if it remains pending.' : 'The completed game result is saved, but its analysis could not be generated.');
+  return <div className="panel-light p-8 sm:p-10 text-center space-y-5 max-w-lg mx-auto"><div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto" style={{ background: 'rgba(226,112,58,0.15)', color: 'var(--ember-deep)' }}><AlertTriangle className="w-6 h-6" /></div><div><h3 className="font-display text-xl sm:text-2xl font-medium">Analysis unavailable</h3><p className="text-sm mt-2 text-ink-soft">{message}</p></div><button type="button" className="btn btn-on-light" onClick={onRetry} disabled={isRetrying}>{isRetrying ? 'Retrying…' : <><RefreshCw className="w-4 h-4" /> {label}</>}</button></div>;
 }
 
 function AnalysisResults({ analysis, sessions }) {

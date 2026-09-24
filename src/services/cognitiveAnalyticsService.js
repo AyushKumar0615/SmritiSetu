@@ -10,11 +10,39 @@ function toSession(row) {
     id: row.id, gameId: row.game_id, domain: row.domain, score: number(row.score),
     accuracy: number(row.accuracy), bestStreak: number(row.best_streak),
     difficultyLevel: number(row.difficulty_level), completionTimeSeconds: number(row.completion_time_seconds), completedAt: row.completed_at,
-    analysisStatus: row.analysis_status || 'pending', analysis: row.analysis || null
+    analysisStatus: row.analysis_status || 'pending', analysis: row.analysis || null,
+    analysisError: row.analysis_error || null
   };
 }
 
+// Every error code requestAnalysis() can return, mapped to a message a
+// caregiver can actually act on via the retry UI — instead of one generic
+// "unavailable" string for every cause. Keys match the analyze-cognitive-
+// sessions Edge Function's own { error: <code> } bodies (see its source)
+// plus the client-only codes requestAnalysis() adds itself.
+const ANALYSIS_ERROR_MESSAGES = {
+  network_error: 'Could not reach the analysis service — check your connection and try again.',
+  unauthorized: 'Your sign-in has expired. Please sign in again, then retry.',
+  session_not_found: 'This game result could not be found. It may have been removed.',
+  session_owner_mismatch: "You don't have permission to analyse this session.",
+  caregiver_not_connected: "You aren't currently connected to this elder, so their session can't be analysed.",
+  caller_profile_forbidden: 'Your account is not authorized to request cognitive analysis.',
+  connection_lookup_failed: 'Could not verify your connection to this elder. Please try again.',
+  sessions_query_failed: "Could not read this elder's game history. Please try again.",
+  ai_not_configured: 'AI analysis is not configured on the server. An administrator must set the OPENAI_API_KEY Edge Function secret.',
+  ai_request_failed: 'The AI analysis provider did not respond. Please try again shortly.',
+  ai_response_invalid: 'The AI analysis came back in an unexpected format. Please try again.',
+  analysis_save_failed: 'The analysis was generated but could not be saved. Please try again.',
+  analysis_claim_failed: 'Could not start the analysis. Please try again.'
+};
+
+function describeAnalysisError(code) {
+  return ANALYSIS_ERROR_MESSAGES[code] || 'Analysis is still unavailable. The game result remains saved; please try again later.';
+}
+
 export const CognitiveAnalyticsService = {
+  describeAnalysisError,
+
   async recordSession(payload) {
     // The database RLS policy and the analysis function both authorize with
     // the Supabase Auth JWT. Resolve that same source of truth here rather
@@ -50,8 +78,18 @@ export const CognitiveAnalyticsService = {
       headers: { Authorization: `Bearer ${accessToken}` }
     });
     if (error) {
-      let code = 'analysis_request_failed';
-      try { code = (await error.context.json())?.error || code; } catch {}
+      // error.context is only a Response when the function actually ran and
+      // returned a non-2xx (FunctionsHttpError) — that response carries the
+      // function's own { error: <code> } body. When the request never
+      // reached the function at all (FunctionsFetchError: DNS/CORS/offline/
+      // timeout), context is the raw fetch failure instead, which has no
+      // .json(); surface that distinctly rather than collapsing it into the
+      // same generic code the function itself would return.
+      let code = 'network_error';
+      if (error?.context && typeof error.context.json === 'function') {
+        try { code = (await error.context.json())?.error || 'analysis_request_failed'; }
+        catch { code = 'analysis_request_failed'; }
+      }
       return { ok: false, error: code };
     }
     if (data?.status === 'processing') return { ok: true, status: 'processing' };
@@ -63,7 +101,7 @@ export const CognitiveAnalyticsService = {
     if (!elderId) return { ok: false, error: 'No elder selected.' };
     const { data, error } = await supabase
       .from('game_sessions')
-      .select('id, game_id, domain, score, accuracy, best_streak, difficulty_level, completion_time_seconds, completed_at, analysis_status, analysis')
+      .select('id, game_id, domain, score, accuracy, best_streak, difficulty_level, completion_time_seconds, completed_at, analysis_status, analysis, analysis_error')
       .eq('user_id', elderId)
       .order('completed_at', { ascending: false })
       .limit(50);

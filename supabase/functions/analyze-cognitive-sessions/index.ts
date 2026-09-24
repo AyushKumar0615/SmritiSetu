@@ -98,11 +98,20 @@ Deno.serve(async (req: Request) => {
     .single();
   if (sessionLookupError || !targetSession) return json({ error: 'session_not_found' }, 404);
 
-  if (callerRole === 'elderly' && targetSession.user_id !== authData.user.id) {
-    console.warn('cognitive analysis authorization rejected: session owner mismatch');
-    return json({ error: 'session_owner_mismatch' }, 403);
-  }
-  if (callerRole === 'caregiver') {
+  // Owning the session is always sufficient, regardless of the caller's
+  // profile role. Without this check first, a profile whose role happens to
+  // be 'caregiver' could never analyse its own game session: the old code
+  // fell straight into the caregiver_connections lookup below, which can
+  // never find a row for caller_id === elder_id (self-links are blocked by
+  // the caregiver_connections_no_self_link constraint), so it 403'd every
+  // time. The connection lookup is only needed for a caregiver requesting
+  // someone else's (an elder's) session.
+  const isOwnSession = targetSession.user_id === authData.user.id;
+  if (!isOwnSession) {
+    if (callerRole !== 'caregiver') {
+      console.warn('cognitive analysis authorization rejected: session owner mismatch');
+      return json({ error: 'session_owner_mismatch' }, 403);
+    }
     const { data: connection, error: connectionError } = await admin
       .from('caregiver_connections')
       .select('id')
