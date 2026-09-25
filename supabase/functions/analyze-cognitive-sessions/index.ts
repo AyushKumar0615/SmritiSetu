@@ -58,7 +58,7 @@ Deno.serve(async (req: Request) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
   const authorization = req.headers.get('Authorization');
-  const accessToken = authorization?.match(/^Bearer\\s+(.+)$/i)?.[1]?.trim();
+  const accessToken = authorization?.match(/^Bearer\s+(.+)$/i)?.[1]?.trim();
   if (!accessToken) return json({ error: 'unauthorized' }, 401);
 
   let body: { sessionId?: string };
@@ -212,6 +212,12 @@ Deno.serve(async (req: Request) => {
   const { error: saveError } = await admin.from('game_sessions').update({
     analysis_status: 'ready', analysis, analysis_error: null, analysis_generated_at: new Date().toISOString()
   }).eq('id', targetSession.id);
-  if (saveError) return json({ error: 'analysis_save_failed' }, 500);
+  if (saveError) {
+    // Without this the row stays claimed as 'processing', so every retry in
+    // the next 10 minutes short-circuits to { status: 'processing' } instead
+    // of actually re-running — same release valve as the paths above.
+    await markFailed('analysis_save_failed');
+    return json({ error: 'analysis_save_failed' }, 500);
+  }
   return json({ status: 'ready', analysis });
 });

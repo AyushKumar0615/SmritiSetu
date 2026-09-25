@@ -32,8 +32,13 @@ export default function CognitiveAnalytics({ elderId, userName }) {
     setIsRetrying(true);
     setError('');
     const result = await CognitiveAnalyticsService.requestAnalysis(latestSession.id);
-    if (!result.ok) setError(CognitiveAnalyticsService.describeAnalysisError(result.error));
+    // loadAnalytics() clears `error` as it starts, so the reason this retry
+    // failed is re-applied after the reload — otherwise client-only codes
+    // (network_error, unauthorized) would vanish, since those never reach
+    // the row's persisted analysis_error.
+    const failureMessage = result.ok ? '' : CognitiveAnalyticsService.describeAnalysisError(result.error);
     await loadAnalytics();
+    if (failureMessage) setError(failureMessage);
     setIsRetrying(false);
   };
 
